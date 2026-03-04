@@ -1,0 +1,27 @@
+# Standard configuration file for python projects to unify various project settings such as package setup, dependencies, and tooling configuration. 
+# Tom's Obvious Minimal Language.
+
+
+[project]
+name = "PokemonStadium"
+version = "0.1.0"
+requires-python = ">=3.12"
+dependencies = [
+  "fastapi>=0.110",
+  "uvicorn[standard]>=0.27", # ASGI server -> Asynchronous Server Gateway Interface. Python web server that act as a bridge between asynchronous web applciations and the network. Enables support for HTTP/w, WebSocjets, and high-concurrency, long-lived conenctions.
+  "pydantic-settings>=2.2", # Config management (loads config from environment variables). Commonly used to define a settings class and read things like DATABASE_URL.
+  "sqlalchemy>=2.0", # Database ORM / toolkit
+  "psycopg[binary]>=3.1", # PostgreSQL driver for python
+  "alembic>=1.13", # Database migrations tool for SQLAlchemy. Used to create and apply schema changes. 
+  "redis>=5.0", # Redis client for python
+]
+[dependency-groups]
+test = [  
+  "pytest>=8.0", # Python testing framework
+]
+ lint = [
+  "ruff>=0.3", # Python linter/formatter tool. 
+]
+
+[tool.ruff]
+line-length = 100

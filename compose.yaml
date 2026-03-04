@@ -1,0 +1,84 @@
+# Defines a list of containers (services) to start
+services:
+  # Service name (hostname) to be used in the Docker network
+  postgres:
+    # Use the official postgres image version 16
+    image: postgres:16
+    # Enviroment variables passed to the container at startup
+    environment:
+      # Create a db named poke
+      POSTGRES_DB: poke
+      # Creata a user named poke
+      POSTGRES_USER: poke
+      # Create a password: poke
+      POSTGRES_PASSWORD: poke
+    # Publishes cointainer ports to your host machine
+    ports:
+      # Host port:Container port
+      - "5432:5432"
+    # Attaches persistent storage.
+    volumes:
+      # Mount a named volume pgdata into Postgres data directory so DB persists accreoss restarts.
+      # pgdata is the name of the volume
+      - pgdata:/var/lib/postgresql/data
+
+  # Service name redis
+  redis:
+    # Use redis verison 7
+    image: redis:7
+    ports:
+      # Host port:Container port
+      - "6379:6379"
+
+  # backend web server container name
+  api:
+    # Build an image from DockerFile in the backend directory
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      target: dev
+    # load environment variables from the host file .env and pass them into the container
+    env_file:
+      - ./.env
+    # Publishes cointainer ports to your host machine
+    # Host port:Container port
+    ports:
+      - "8000:8000"
+    # Bind-mount the local ./backend to the container at /app
+    # If a file in ./backend changes, the change will appear in the container.
+    # Good for dev, not typical for production
+    volumes:
+      - ./backend:/app
+    # Start the following services/containers before this one
+    depends_on:
+      - postgres
+      - redis
+    # Run the following command
+    # run a shell (sh) and execute the command as login-ish shell (-l) and command string (-c)
+    # uv run - runs a command inside your uv-managed environment (uv is a Python packaging tool)
+    # uvicorn app.main:app starts FastAPI (or ASGI) app object app from app/main.py
+    # --host 0.0.0.0 listen on all interfaces inside the container (for port mapping to work)
+    # --port 8000 binds to port 8000
+    # --reload auto-reload on code changes (dev mode). Works nicely with the bind mount
+    command: >
+      sh -lc "uv run uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
+
+  #Background worker (Celery/RQ/custom worker, etc.) that processes jobs, often using Redis.
+  worker:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      target: dev
+    env_file:
+      - ./.env
+    volumes:
+      - ./backend:/app
+    depends_on:
+      - postgres
+      - redis
+    command: >
+      sh -lc "uv run python -m app.worker"
+
+# Declares a named volume called pgdata that docker manages (stores outside the project folder).
+volumes:
+  pgdata:
