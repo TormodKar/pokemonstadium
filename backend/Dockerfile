@@ -30,7 +30,7 @@ COPY pyproject.toml uv.lock* ./
 
 # --------- Runtime deps only (for prod) ----
 # This installs ONLY [project].dependencies
-RUN uv sync --forzen --no-dev || uv sync --no-dev
+RUN uv sync --frozen --no-dev || uv sync --no-dev
 
 # Save a copy of the runtime venv so we can reuse it
 RUN cp -a /opt/venv /opt/venv-runtime

@@ -15,5 +15,5 @@ def health():
 def ready():
   # "ready" should check dependencies
   check_db()
-  check_status()
+  check_redis()
   return {"ok": True}

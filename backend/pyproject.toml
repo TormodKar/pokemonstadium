@@ -19,7 +19,7 @@ dependencies = [
 test = [  
   "pytest>=8.0", # Python testing framework
 ]
- lint = [
+lint = [
   "ruff>=0.3", # Python linter/formatter tool. 
 ]
 

@@ -2,7 +2,7 @@ from sqlalchemy import create_engine, text
 from app.settings import settings
 
 # Creates engine once globally
-egine = create_engine(settings.database_url, pool_pre_ping=True) 
+engine = create_engine(settings.database_url, pool_pre_ping=True) 
 # pool_pre_ping will piung the databse before attempting to conenct
 # if connection is dead for any reason, SQLAlchemy transparently replaces the dead connection
 
